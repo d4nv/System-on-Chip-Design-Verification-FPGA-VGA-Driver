@@ -5,49 +5,28 @@ tags: fpga vga verilog
 categories: demo
 ---
 
-Add a short welcome message or introduction here. Aim to get the viewer interested in what follows! Guideline: 1 or 2 sentences. 
-
-I am adding a test sentence here at 13:24 on 03/12/24.
+In this project I take a VGA driver written in Verilog, get it running on a Basys3 FPGA board, and then change it to draw my own image on a 640x480 monitor.
 
 ## **Template VGA Design**
 ### **Project Set-Up**
-Summarise the project set-up and design flow. Include a screenshot of your own set-up, for example see the image of my Project Summary window below. Guideline 1 short paragraph.
+I made a new Vivado project for the Basys3 board, which uses the Artix-7 xc7a35tcpg236-1 chip. I added the template files (VGATop, VGASync, VGAColourCycle), the testbench and the Basys3 constraints file. At first I picked the wrong chip (xc7a15t), and the board refused the bitstream, so I changed the part and upgraded the clock IP to fix it.
 
-<img src="https://raw.githubusercontent.com/melgineer/fpga-vga-verilog/main/docs/assets/images/VGAPrjSum.png">
+<img src="https://raw.githubusercontent.com/d4nv/System-on-Chip-Design-Verification-FPGA-VGA-Driver/main/docs/assets/images/project_summary.png">
+
 ### **Template Code**
-Outline the structure and design of the Verilog code templates you were given. What do they do? Include reference to how a VGA interface works. Guideline: 2/3 short paragraphs, consider including screenshot(s).
+VGATop is the top module that connects everything together. It uses a Clocking Wizard (clk_wiz_0) to turn the board's 100 MHz clock into the 25 MHz pixel clock that 640x480 VGA needs. VGASync counts columns and rows, makes the hSync and vSync pulses, and sets vid_on high only when the counters are inside the visible 640x480 area. ColourCycle changes the red, green and blue values over time, and VGATop only sends them to the screen when vid_on is high.
+
+A VGA monitor draws the screen one line at a time from left to right, then top to bottom. After each line there's a short gap and an hSync pulse, and after each full frame there's a vSync pulse, so the monitor knows when to start again. [add anything you noticed in the code]
+
 ### **Simulation**
-Explain the simulation process. Reference any important details, include a well-selected screenshot of the simulation. Guideline: 1/2 short paragraphs.
+I ran a behavioural simulation using the testbench. It sets the screen size very small (6x2) so it finishes quickly. In the waveform you can see hSync pulsing once per line, vSync once per frame, and vid_on only going high while the row and col counters are in the display area.
+
+<img src="https://raw.githubusercontent.com/d4nv/System-on-Chip-Design-Verification-FPGA-VGA-Driver/main/docs/assets/images/simulation.png">
+
 ### **Synthesis**
-Describe the synthesis and implementation processes. Consider including 1/2 useful screenshot(s). Guideline: 1/2 short paragraphs.
+Synthesis turns the Verilog into logic for the FPGA, and implementation places it on the chip and routes the connections. Bitstream generation failed at first because the VGA pins were commented out in the constraints file, and hSync/vSync had different capital letters to the Verilog. Once I uncommented the pins and matched the names, it generated with no errors. [add utilisation numbers if you want, e.g. LUTs used]
+
 ### **Demonstration**
-Perhaps add a picture of your demo. Guideline: 1/2 sentences.
+Here's the template colour cycle running on the Basys3 board.
 
-## **My VGA Design Edit**
-Introduce your own design idea. Consider how complex/achievabble this might be or otherwise. Reference any research you do online (use hyperlinks).
-### **Code Adaptation**
-Briefly show how you changed the template code to display a different image. Demonstrate your understanding. Guideline: 1-2 short paragraphs.
-### **Simulation**
-Show how you simulated your own design. Are there any things to note? Demonstrate your understanding. Add a screenshot. Guideline: 1-2 short paragraphs.
-### **Synthesis**
-Describe the synthesis & implementation outputs for your design, are there any differences to that of the original design? Guideline 1-2 short paragraphs.
-### **Demonstration**
-If you get your own design working on the Basys3 board, take a picture! Guideline: 1-2 sentences.
-
-## **More Markdown Basics**
-This is a paragraph. Add an empty line to start a new paragraph.
-
-Font can be emphasised as *Italic* or **Bold**.
-
-Code can be highlighted by using `backticks`.
-
-Hyperlinks look like this: [GitHub Help](https://help.github.com/).
-
-A bullet list can be rendered as follows:
-- vectors
-- algorithms
-- iterators
-
-Images can be added by uploading them to the repository in a /docs/assets/images folder, and then rendering using HTML via githubusercontent.com as shown in the example below.
-
-<img src="https://raw.githubusercontent.com/melgineer/fpga-vga-verilog/main/docs/assets/images/VGAPrjSrcs.png">
+<img src="https://raw.githubusercontent.com/d4nv/System-on-Chip-Design-Verification-FPGA-VGA-Driver/main/docs/assets/images/demo.jpg">
